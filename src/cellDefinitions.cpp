@@ -192,6 +192,7 @@ struct cellGrid {
       } else {
         output += "?";
       }
+      output += "(" + to_string(cells[i].position.x) + "," + to_string(cells[i].position.y) + "," + to_string(cells[i].position.z) + ")";
     }
     output += "]";
     return output;

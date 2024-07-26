@@ -234,6 +234,8 @@ vector<orientedBlock> getBlocksRotated() {
   vector<orientedBlock> blocksRotated_SUBSET;
   blocksRotated_SUBSET.push_back(blocksRotated[0]);
   blocksRotated_SUBSET.push_back(blocksRotated[1]);
+  blocksRotated_SUBSET.push_back(blocksRotated[2]);
+  blocksRotated_SUBSET.push_back(blocksRotated[3]);
   return blocksRotated_SUBSET;
 }
 

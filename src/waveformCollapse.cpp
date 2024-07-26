@@ -33,11 +33,45 @@ namespace std {
   };
 }
 
+int getSearchQuantityForLevel(int numCells, int iteration) {
+  for (int i = 0; i < iteration; i++) {
+    numCells--;
+  }
+  cout << "getSearchQuantityForLevel: " + to_string(numCells) + " cells\n";
+  return numCells;
+}
+
+vector<int> getLowestEntropies(cellGrid& input, int num) {
+  vector<int> output;
+  for (int i = 0; i < num; i++) {
+    int minimumEntropy = INT_MAX;
+    int minimumIndex = -1;
+    for (int j = 0; j < input.cells.size(); j++) {
+      int entropy = input.cells[j].getEntropy();
+      if (entropy <= 1) continue;
+      if (find(output.begin(), output.end(), j) != output.end()) continue;
+      if (entropy < minimumEntropy) {
+        minimumEntropy = entropy;
+      }
+      minimumIndex = j;
+    }
+    output.push_back(minimumIndex);
+  }
+  cout << "getLowestEntropies: ";
+  for (int num : output) {
+    cout << to_string(input.cells[num].getEntropy()) + "@" + to_string(num) + " ";
+  }
+  cout << "\n";
+  return output;
+}
+
 unordered_map<cellGrid, vector<cellGrid>> existingResults;
 
 vector<cellGrid> findValidSolutions(cellGrid& input, int iteration) {
+  //cout << string(iteration, ' ');
+  //cout << "hashmap size: " + to_string(existingResults.size()) + "\n";
   cout << string(iteration, ' ');
-  cout << "hashmap size: " + to_string(existingResults.size()) + "\n";
+  cout << "input: " + static_cast<string>(input) + "\n";
   //cout << string(iteration, ' ');
   //cout << to_string(hash<cellGrid>{}(input)) + "\n";
   cout << string(iteration, ' ');
@@ -60,8 +94,9 @@ vector<cellGrid> findValidSolutions(cellGrid& input, int iteration) {
   }
 
   vector<cellGrid> output;
-  input.sortCellsByEntropy();
-  for (cell& c : input.cells) {
+  vector<int> cellsToSearch = getLowestEntropies(input, getSearchQuantityForLevel(input.cells.size(), iteration));
+  for (int cellIndex : cellsToSearch) {
+    cell& c = input.cells[cellIndex];
     if (c.getEntropy() <= 1) continue;
     for (int i = 0; i < c.orientedBlockOptions.size(); i++) {
       orientedBlock option = c.orientedBlockOptions[i];
@@ -74,7 +109,7 @@ vector<cellGrid> findValidSolutions(cellGrid& input, int iteration) {
   }
   cout << "output of size " + to_string(output.size()) + ": ";
   for (cellGrid cg : output) {
-    cout << static_cast<string>(cg);
+    cout << static_cast<string>(cg) << to_string(hash<cellGrid>{}(cg));
   }
   cout << "\n";
   existingResults[input] = output;
