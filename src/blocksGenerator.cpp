@@ -236,7 +236,10 @@ vector<orientedBlock> getBlocksRotated() {
   blocksRotated_SUBSET.push_back(blocksRotated[1]);
   blocksRotated_SUBSET.push_back(blocksRotated[2]);
   blocksRotated_SUBSET.push_back(blocksRotated[3]);
+  blocksRotated_SUBSET.push_back(blocksRotated[4]);
+  blocksRotated_SUBSET.push_back(blocksRotated[5]);
   return blocksRotated_SUBSET;
+  //return blocksRotated;
 }
 
 const vector<orientedBlock> BLOCKS_ROTATED = getBlocksRotated();

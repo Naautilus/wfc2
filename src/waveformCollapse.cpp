@@ -34,11 +34,12 @@ namespace std {
 }
 
 int getSearchQuantityForLevel(int numCells, int iteration) {
-  for (int i = 0; i < iteration; i++) {
-    numCells--;
-  }
-  cout << "getSearchQuantityForLevel: " + to_string(numCells) + " cells\n";
-  return numCells;
+  //for (int i = 0; i < iteration; i++) {
+  //  numCells--;
+  //}
+  ////cout << "getSearchQuantityForLevel: " + to_string(numCells) + " cells\n";
+  //return numCells;
+  return 1;
 }
 
 vector<int> getLowestEntropies(cellGrid& input, int num) {
@@ -57,38 +58,42 @@ vector<int> getLowestEntropies(cellGrid& input, int num) {
     }
     output.push_back(minimumIndex);
   }
-  cout << "getLowestEntropies: ";
-  for (int num : output) {
-    cout << to_string(input.cells[num].getEntropy()) + "@" + to_string(num) + " ";
-  }
-  cout << "\n";
+  //cout << "getLowestEntropies: ";
+  //for (int num : output) {
+  //  cout << to_string(input.cells[num].getEntropy()) + "@" + to_string(num) + " ";
+  //}
+  //cout << "\n";
   return output;
 }
 
+const int MAX_DESIRED_OUTPUT_SIZE = 10;
+
 unordered_map<cellGrid, vector<cellGrid>> existingResults;
 
-vector<cellGrid> findValidSolutions(cellGrid& input, int iteration) {
+vector<cellGrid> findValidSolutions(cellGrid& input, int iteration, int previousOutputSize) {
   //cout << string(iteration, ' ');
   //cout << "hashmap size: " + to_string(existingResults.size()) + "\n";
-  cout << string(iteration, ' ');
-  cout << "input: " + static_cast<string>(input) + "\n";
+  //cout << string(iteration, ' ');
+  //cout << "input: " + static_cast<string>(input) + "\n";
   //cout << string(iteration, ' ');
   //cout << to_string(hash<cellGrid>{}(input)) + "\n";
-  cout << string(iteration, ' ');
-  cout << "findValidSolutions called on input with " + to_string(input.numCollapsedCells()) + " collapsed cells and a total entropy of " + to_string(input.totalEntropy()) + "\n";
-  cout << string(iteration, ' ');
+  //cout << string(iteration, ' ');
+  //cout << "findValidSolutions called on input with " + to_string(input.numCollapsedCells()) + " collapsed cells and a total entropy of " + to_string(input.totalEntropy()) + " and a previous output size of " + to_string(previousOutputSize) + "\n";
   if (existingResults.find(input) != existingResults.end()) {
-    cout << "existingResults contains output\n";
+    //cout << string(iteration, ' ');
+    //cout << "existingResults contains output\n";
     //return existingResults[input];
     return {};
   }
   if (!input.isValid()) {
-    cout << "connection rules not met\n";
+    //cout << string(iteration, ' ');
+    //cout << "connection rules not met\n";
     existingResults[input] = {};
     return {};
   }
   if (input.isCollapsed()) {
-    cout << "input collapsed\n";
+    //cout << string(iteration, ' ');
+    //cout << "input collapsed\n";
     existingResults[input] = vector(1, input);
     return vector(1, input);
   }
@@ -101,17 +106,20 @@ vector<cellGrid> findValidSolutions(cellGrid& input, int iteration) {
     for (int i = 0; i < c.orientedBlockOptions.size(); i++) {
       orientedBlock option = c.orientedBlockOptions[i];
       c.orientedBlockOptions.erase(c.orientedBlockOptions.begin()+i);
-      cout << "option " + to_string(option.block) + " removed from cell at " + to_string(c.position.x) + to_string(c.position.y) + to_string(c.position.z) + "\n";
-      vector<cellGrid> temp = findValidSolutions(input, iteration + 1);
+      //cout << "option " + to_string(option.block) + " removed from cell at " + to_string(c.position.x) + to_string(c.position.y) + to_string(c.position.z) + "\n";
+      vector<cellGrid> temp = findValidSolutions(input, iteration + 1, output.size() + previousOutputSize);
       output.insert(output.end(), temp.begin(), temp.end());
       c.orientedBlockOptions.insert(c.orientedBlockOptions.begin()+i, option);
+      if (output.size() + previousOutputSize > MAX_DESIRED_OUTPUT_SIZE) break;
     }
+    if (output.size() + previousOutputSize > MAX_DESIRED_OUTPUT_SIZE) break;
   }
-  cout << "output of size " + to_string(output.size()) + ": ";
-  for (cellGrid cg : output) {
-    cout << static_cast<string>(cg) << to_string(hash<cellGrid>{}(cg));
-  }
-  cout << "\n";
+  //cout << string(iteration, ' ');
+  //cout << "output of size " + to_string(output.size());// + ": ";
+  //for (cellGrid cg : output) {
+  //  cout << static_cast<string>(cg) << to_string(hash<cellGrid>{}(cg));
+  //}
+  //cout << "\n";
   existingResults[input] = output;
   return output;
 }
