@@ -46,7 +46,6 @@ vector<int> getLowestEntropies(cellGrid& input, int num) {
   vector<int> output;
   for (int i = 0; i < num; i++) {
     int minimumEntropy = INT_MAX;
-    int minimumIndex = -1;
     for (int j = 0; j < input.cells.size(); j++) {
       int entropy = input.cells[j].getEntropy();
       if (entropy <= 1) continue;
@@ -54,9 +53,18 @@ vector<int> getLowestEntropies(cellGrid& input, int num) {
       if (entropy < minimumEntropy) {
         minimumEntropy = entropy;
       }
-      minimumIndex = j;
     }
-    output.push_back(minimumIndex);
+    vector<int> indicesWithMinimumEntropy;
+    for (int j = 0; j < input.cells.size(); j++) {
+      int entropy = input.cells[j].getEntropy();
+      if (entropy <= 1) continue;
+      if (find(output.begin(), output.end(), j) != output.end()) continue;
+      if (entropy == minimumEntropy) {
+        indicesWithMinimumEntropy.push_back(j);
+      }
+    }
+    int randomIndex = rand() % indicesWithMinimumEntropy.size();
+    output.push_back(indicesWithMinimumEntropy[randomIndex]);
   }
   //cout << "getLowestEntropies: ";
   //for (int num : output) {
@@ -69,6 +77,7 @@ vector<int> getLowestEntropies(cellGrid& input, int num) {
 const int MAX_DESIRED_OUTPUT_SIZE = 10;
 
 unordered_map<cellGrid, vector<cellGrid>> existingResults;
+default_random_engine rng(time(NULL));
 
 vector<cellGrid> findValidSolutions(cellGrid& input, int iteration, int previousOutputSize) {
   //cout << string(iteration, ' ');
@@ -103,13 +112,17 @@ vector<cellGrid> findValidSolutions(cellGrid& input, int iteration, int previous
   for (int cellIndex : cellsToSearch) {
     cell& c = input.cells[cellIndex];
     if (c.getEntropy() <= 1) continue;
+    vector<int> oBOSearchOrder = vector(c.orientedBlockOptions.size(), 0);
+    iota(oBOSearchOrder.begin(), oBOSearchOrder.end(), 0);
+    shuffle(oBOSearchOrder.begin(), oBOSearchOrder.end(), rng);
     for (int i = 0; i < c.orientedBlockOptions.size(); i++) {
-      orientedBlock option = c.orientedBlockOptions[i];
-      c.orientedBlockOptions.erase(c.orientedBlockOptions.begin()+i);
+      int j = oBOSearchOrder[i];
+      orientedBlock option = c.orientedBlockOptions[j];
+      c.orientedBlockOptions.erase(c.orientedBlockOptions.begin()+j);
       //cout << "option " + to_string(option.block) + " removed from cell at " + to_string(c.position.x) + to_string(c.position.y) + to_string(c.position.z) + "\n";
       vector<cellGrid> temp = findValidSolutions(input, iteration + 1, output.size() + previousOutputSize);
       output.insert(output.end(), temp.begin(), temp.end());
-      c.orientedBlockOptions.insert(c.orientedBlockOptions.begin()+i, option);
+      c.orientedBlockOptions.insert(c.orientedBlockOptions.begin()+j, option);
       if (output.size() + previousOutputSize > MAX_DESIRED_OUTPUT_SIZE) break;
     }
     if (output.size() + previousOutputSize > MAX_DESIRED_OUTPUT_SIZE) break;

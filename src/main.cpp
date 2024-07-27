@@ -1,6 +1,7 @@
 #include "waveformCollapse.cpp"
 
 int main() {
+  srand(time(NULL));
   for (orientedBlock b : BLOCKS_ROTATED) {
     cout << static_cast<string>(b) + "\n";
   }
