@@ -1,6 +1,6 @@
 #include "cellDefinitions.cpp"
 
-long hash_sub(long hash, int input) {
+long hash_sub(long hash, int input) { // baby's first hash
   int HASH_MULTIPLIER = 26347859;
   hash += input;
   hash *= HASH_MULTIPLIER;
