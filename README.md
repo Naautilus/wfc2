@@ -1,0 +1,1 @@
+modified Wavefunction Collapse algorithm WIP for the purpose of designing a number of different possible CRAM cannon configurations for the video game From the Depths, continually optimized by performance (not yet implemented) to design an optimal cannon configuration
